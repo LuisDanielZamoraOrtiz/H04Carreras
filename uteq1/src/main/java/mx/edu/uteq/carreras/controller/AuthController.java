@@ -49,6 +49,12 @@ public class AuthController {
         return destino(usuario.getRol());
     }
 
+    @GetMapping("/logout")
+    public String cerrarSesion(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
+    }
+
     private String destino(Rol rol) {
         return switch (rol) {
             case ADMIN -> "redirect:/admin";

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<th:block th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${titulo} + ' | UTEQ'">UTEQ</title>
+    <link rel="stylesheet" th:href="@{/css/uteq.css}">
+</th:block>
+<body>
+<header class="navbar" th:fragment="navbar">
+    <div class="contenedor navbar-contenido">
+        <a class="navbar-marca" th:href="@{/}">UTEQ</a>
+        <nav class="navbar-enlaces" aria-label="Navegación principal">
+            <a th:href="@{/}">Inicio</a>
+            <th:block th:if="${usuarioSesion == null}">
+                <a th:href="@{/login}">Iniciar sesión</a>
+                <a th:href="@{/registro}">Regístrate</a>
+            </th:block>
+            <th:block th:if="${usuarioSesion != null}">
+                <span th:text="'Hola, ' + ${usuarioSesion.nombreCompleto}">Hola</span>
+                <a th:if="${usuarioSesion.rol.name() == 'ADMIN'}" th:href="@{/admin}">Administración</a>
+                <a th:if="${usuarioSesion.rol.name() == 'SECRETARIA'}" th:href="@{/secretaria}">Secretaría</a>
+                <a th:href="@{/logout}">Cerrar sesión</a>
+            </th:block>
+        </nav>
+    </div>
+</header>
+<div th:fragment="alertas">
+    <p class="alerta alerta-exito" th:if="${mensajeExito}" th:text="${mensajeExito}"></p>
+    <p class="alerta alerta-error" th:if="${mensajeError}" th:text="${mensajeError}"></p>
+</div>
+<aside class="panel-sidebar" th:fragment="sidebar(activo)">
+    <a class="panel-marca" th:href="@{/}">UTEQ</a>
+    <nav class="panel-nav" aria-label="Menú lateral">
+        <th:block th:if="${usuarioSesion != null and usuarioSesion.rol.name() == 'ADMIN'}">
+            <a th:classappend="${activo == 'dashboard'} ? 'activo'" th:href="@{/admin}">Dashboard</a>
+            <a th:classappend="${activo == 'nueva-division'} ? 'activo'" th:href="@{/admin/divisiones/nueva}">Nueva división</a>
+        </th:block>
+        <a th:if="${usuarioSesion != null and usuarioSesion.rol.name() == 'SECRETARIA'}"
+           th:classappend="${activo == 'panel'} ? 'activo'" th:href="@{/secretaria}">Panel</a>
+        <a th:href="@{/logout}">Cerrar sesión</a>
+    </nav>
+</aside>
+<footer class="footer" th:fragment="footer">
+    <div class="contenedor">UTEQ — Universidad Tecnológica de Querétaro</div>
+</footer>
+</body>
+</html>

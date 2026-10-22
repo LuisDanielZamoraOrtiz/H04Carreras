@@ -12,8 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Reglas del panel de secretaría académica (HU-10): listar las divisiones con su
- * estado y el resumen de lo publicado.
+ * Reglas del panel de secretaría académica:
+ * <ul>
+ *   <li>HU-10: listar las divisiones con su estado y el resumen de lo publicado.</li>
+ *   <li>HU-11: habilitar o deshabilitar una división para controlar si se publica.</li>
+ * </ul>
  */
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,21 @@ public class SecretariaService {
                 totalDivisiones - divisionesActivas,
                 carreraRepository.count(),
                 carreraRepository.countByActivaTrueAndDivisionActivaTrue());
+    }
+
+    /**
+     * HU-11: invierte el estado de la división. Al deshabilitarla, sus carreras
+     * dejan de contarse como publicadas aunque sigan marcadas como activas.
+     *
+     * @return el estado nuevo de la división ya guardado.
+     * @throws IllegalArgumentException si la división no existe.
+     */
+    @Transactional
+    public DivisionResumen alternarEstado(Long id) {
+        Division division = divisionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La división solicitada no existe."));
+        division.setActiva(!division.isActiva());
+        return resumir(divisionRepository.save(division));
     }
 
     private DivisionResumen resumir(Division division) {

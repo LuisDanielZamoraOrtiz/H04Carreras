@@ -55,6 +55,7 @@
                         <th scope="col">Estado</th>
                         <th scope="col">Carreras publicadas</th>
                         <th scope="col">Creada</th>
+                        <th scope="col">Acción</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -78,6 +79,16 @@
                                 No se publican</p>
                         </td>
                         <td th:text="${division.fechaCreacion}">—</td>
+                        <td>
+                            <form class="tabla-acciones" method="post"
+                                  th:action="@{/secretaria/divisiones/{id}/estado(id=${division.id})}">
+                                <button type="submit" class="btn btn-sm"
+                                        th:classappend="${division.activa} ? 'btn-peligro' : 'btn-exito'"
+                                        th:text="${division.activa} ? 'Deshabilitar' : 'Habilitar'">
+                                    Cambiar estado
+                                </button>
+                            </form>
+                        </td>
                     </tr>
                     </tbody>
                 </table>

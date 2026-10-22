@@ -10,6 +10,7 @@ public interface CarreraRepository extends JpaRepository<Carrera, Long> {
     List<Carrera> findByActivaTrueAndDivisionActivaTrueOrderByNombreAsc();
     long countByActivaTrueAndDivisionActivaTrue();
     long countByDivisionId(Long divisionId);
+    long countByDivisionIdAndActivaTrue(Long divisionId);
     boolean existsByClaveIgnoreCase(String clave);
     boolean existsByClaveIgnoreCaseAndIdNot(String clave, Long id);
 }

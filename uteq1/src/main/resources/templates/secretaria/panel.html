@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Panel de secretaría')}"></th:block>
+</head>
+<body class="panel-body">
+<div class="panel-layout">
+    <aside th:replace="~{fragments/layout :: sidebar('panel')}"></aside>
+    <main class="panel-main">
+        <div class="panel-header">
+            <div>
+                <p class="panel-eyebrow">Secretaría Académica</p>
+                <h1>Divisiones y publicaciones</h1>
+            </div>
+            <a class="btn btn-claro" th:href="@{/logout}">Cerrar sesión</a>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alertas}"></div>
+
+        <section class="stats-grid" aria-label="Resumen general">
+            <div class="stat-card">
+                <p class="stat-valor" th:text="${resumen.totalDivisiones}">0</p>
+                <p class="stat-etiqueta">Divisiones registradas</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-valor" th:text="${resumen.divisionesActivas}">0</p>
+                <p class="stat-etiqueta">Divisiones habilitadas</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-valor" th:text="${resumen.divisionesDeshabilitadas}">0</p>
+                <p class="stat-etiqueta">Divisiones deshabilitadas</p>
+            </div>
+            <div class="stat-card">
+                <p class="stat-valor" th:text="${resumen.carrerasPublicadas} + ' / ' + ${resumen.totalCarreras}">0 / 0</p>
+                <p class="stat-etiqueta">Carreras publicadas del total</p>
+            </div>
+        </section>
+
+        <section class="panel-seccion" style="margin-top: 1.5rem;">
+            <div class="panel-header">
+                <h2>Divisiones</h2>
+                <span class="badge badge-clave" th:text="${resumen.totalDivisiones} + ' en total'">0 en total</span>
+            </div>
+            <p class="form-ayuda" style="margin-bottom: 1rem;">
+                Una carrera se publica cuando está activa y su división está habilitada.
+                Al deshabilitar una división, sus carreras dejan de ofrecerse a los aspirantes.
+            </p>
+
+            <div class="tabla-wrapper">
+                <table class="tabla">
+                    <thead>
+                    <tr>
+                        <th scope="col">Clave</th>
+                        <th scope="col">División</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Carreras publicadas</th>
+                        <th scope="col">Creada</th>
+                        <th scope="col">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="division : ${divisiones}">
+                        <td><span class="badge badge-clave" th:text="${division.clave}">DTI</span></td>
+                        <td>
+                            <strong th:text="${division.nombre}">División</strong>
+                            <p class="form-ayuda" th:if="${division.descripcion}"
+                               th:text="${division.descripcion}">Descripción</p>
+                        </td>
+                        <td>
+                            <span class="badge badge-activa" th:if="${division.activa}">Habilitada</span>
+                            <span class="badge badge-inactiva" th:unless="${division.activa}">Deshabilitada</span>
+                        </td>
+                        <td>
+                            <span th:text="${division.carrerasPublicadas} + ' de ' + ${division.totalCarreras}">0 de 0</span>
+                            <p class="form-ayuda" th:unless="${division.activa}"
+                               th:text="${division.carrerasActivas} + (${division.carrerasActivas} == 1
+                                        ? ' carrera activa no se publica'
+                                        : ' carreras activas no se publican')">
+                                No se publican</p>
+                        </td>
+                        <td th:text="${division.fechaCreacion}">—</td>
+                        <td>
+                            <form class="tabla-acciones" method="post"
+                                  th:action="@{/secretaria/divisiones/{id}/estado(id=${division.id})}">
+                                <button type="submit" class="btn btn-sm"
+                                        th:classappend="${division.activa} ? 'btn-peligro' : 'btn-exito'"
+                                        th:text="${division.activa} ? 'Deshabilitar' : 'Habilitar'">
+                                    Cambiar estado
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="vacio" th:if="${#lists.isEmpty(divisiones)}">Aún no hay divisiones registradas.</p>
+        </section>
+    </main>
+</div>
+</body>
+</html>

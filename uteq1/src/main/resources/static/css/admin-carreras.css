@@ -9,3 +9,7 @@
     gap: .5rem;
     margin-top: .75rem;
 }
+
+.carreras-acciones {
+    flex-wrap: wrap;
+}

@@ -63,4 +63,64 @@ public class AdminCarreraController {
         }
         return "redirect:/admin/divisiones/" + id + "/carreras";
     }
+
+    @GetMapping("/carreras/{id}/editar")
+    public String editar(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            model.addAttribute("carrera", carreraService.buscarPorId(id));
+            model.addAttribute("niveles", NivelCarrera.values());
+            return "admin/carrera-form";
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+            return "redirect:/admin";
+        }
+    }
+
+    @PostMapping("/carreras/{id}/actualizar")
+    public String actualizar(@PathVariable("id") Long id,
+                             @ModelAttribute("carrera") Carrera carrera, BindingResult bindingResult,
+                             Model model, RedirectAttributes redirectAttributes) {
+        Carrera original;
+        try {
+            original = carreraService.buscarPorId(id);
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+            return "redirect:/admin";
+        }
+
+        try {
+            if (bindingResult.hasErrors()) {
+                throw new IllegalArgumentException("Selecciona un nivel de carrera válido.");
+            }
+            Carrera actualizada = carreraService.actualizar(id, carrera);
+            redirectAttributes.addFlashAttribute("mensajeExito", "Carrera actualizada.");
+            return "redirect:/admin/divisiones/" + actualizada.getDivision().getId() + "/carreras";
+        } catch (IllegalArgumentException ex) {
+            carrera.setId(id);
+            carrera.setDivision(original.getDivision());
+            model.addAttribute("carrera", carrera);
+            model.addAttribute("niveles", NivelCarrera.values());
+            model.addAttribute("mensajeError", ex.getMessage());
+            return "admin/carrera-form";
+        }
+    }
+
+    @PostMapping("/carreras/{id}/eliminar")
+    public String eliminar(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        Long divisionId;
+        try {
+            divisionId = carreraService.buscarPorId(id).getDivision().getId();
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+            return "redirect:/admin";
+        }
+
+        try {
+            carreraService.eliminar(id);
+            redirectAttributes.addFlashAttribute("mensajeExito", "Carrera eliminada.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("mensajeError", ex.getMessage());
+        }
+        return "redirect:/admin/divisiones/" + divisionId + "/carreras";
+    }
 }

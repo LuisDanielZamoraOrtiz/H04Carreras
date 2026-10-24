@@ -35,6 +35,7 @@
                             <th scope="col">Nombre</th>
                             <th scope="col">Nivel</th>
                             <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -46,6 +47,17 @@
                                 <span class="badge badge-activa" th:if="${c.activa and division.activa}">Visible</span>
                                 <span class="badge badge-aviso" th:if="${c.activa and !division.activa}">Oculta (división deshabilitada)</span>
                                 <span class="badge badge-inactiva" th:unless="${c.activa}">Deshabilitada</span>
+                            </td>
+                            <td>
+                                <div class="tabla-acciones carreras-acciones">
+                                    <a class="btn btn-secundario btn-sm" th:href="@{/admin/carreras/{id}/editar(id=${c.id})}"
+                                       th:aria-label="'Editar ' + ${c.nombre}">Editar</a>
+                                    <form method="post" th:action="@{/admin/carreras/{id}/eliminar(id=${c.id})}"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar esta carrera?')">
+                                        <button class="btn btn-peligro btn-sm" type="submit"
+                                                th:aria-label="'Eliminar ' + ${c.nombre}">Eliminar</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         </tbody>
